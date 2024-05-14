@@ -1,4 +1,4 @@
-package com.ecommerce.eccomerce.module.user.entity;
+package com.ecommerce.eccomerce.module.company.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -10,12 +10,12 @@ import org.hibernate.validator.constraints.Length;
 
 import java.util.UUID;
 
-@Entity(name = "users")
+@Entity(name = "company")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UsersEntity {
+public class CompanyEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -29,6 +29,6 @@ public class UsersEntity {
     @Length(min = 8,max = 100)
     private String password;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "company_name")
+    private String companyName;
 }
