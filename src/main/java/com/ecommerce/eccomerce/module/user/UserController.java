@@ -1,7 +1,7 @@
 package com.ecommerce.eccomerce.module.user;
 
 import com.ecommerce.eccomerce.module.user.dto.CreateUserDto;
-import com.ecommerce.eccomerce.module.user.entity.UserService;
+import com.ecommerce.eccomerce.module.user.dto.LoginDto;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
@@ -15,14 +15,24 @@ public class UserController {
     public UserController(UserService userService){this.userService = userService;}
     
     @PostMapping("/register")
-    public  void register(@RequestBody CreateUserDto createUserDto) throws Exception {
+    public void register(@RequestBody CreateUserDto createUserDto) throws Exception {
         try{
-            logger.warning("Entrei no register");
-            this.userService.saveUser(createUserDto);
+            logger.warning("Start method register - Request - "+createUserDto);
+            this.userService.save(createUserDto);
         }catch (Exception e){
+            logger.warning("Error method register - Response - "+e);
             throw new Exception();
         }
+    }
 
-
+    @PostMapping("/login")
+    public void login(@RequestBody LoginDto loginDto) throws Exception {
+        try{
+            logger.warning("Start method login - Request - "+loginDto);
+            this.userService.login(loginDto);
+        }catch (Exception e){
+            logger.warning("Error method login - Response - "+e);
+            throw new Exception(e);
+        }
     }
 }
