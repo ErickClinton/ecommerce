@@ -15,9 +15,14 @@ public class UserController {
     public UserController(UserService userService){this.userService = userService;}
     
     @PostMapping("/register")
-    public  void register(@RequestBody CreateUserDto createUserDto){
-        logger.warning("Entrei no register");
-        this.userService.saveUser(createUserDto);
+    public  void register(@RequestBody CreateUserDto createUserDto) throws Exception {
+        try{
+            logger.warning("Entrei no register");
+            this.userService.saveUser(createUserDto);
+        }catch (Exception e){
+            throw new Exception();
+        }
+
 
     }
 }
