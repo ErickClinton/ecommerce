@@ -21,7 +21,7 @@ public class UsersEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "email")
+    @Column(name = "email",unique = true)
     @Email(message = "please, put an email exist")
     private String email;
 
