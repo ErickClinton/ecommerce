@@ -1,11 +1,12 @@
 package com.ecommerce.eccomerce.module.company;
 
-import com.ecommerce.eccomerce.module.company.dto.CreateCompanyDto;
-import com.ecommerce.eccomerce.module.company.dto.LoginCompanyDto;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.ecommerce.eccomerce.module.company.dto.CreateDto;
+import com.ecommerce.eccomerce.module.company.dto.LoginDto;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
@@ -18,10 +19,10 @@ public class CompanyController {
     public CompanyController(CompanyService companyService){this.companyService = companyService;}
     
     @PostMapping("/register")
-    public void register(@RequestBody CreateCompanyDto createCompanyDto) throws Exception {
+    public void register(@RequestBody CreateDto createDto) throws Exception {
         try{
-            logger.warning("Start method register - Request - "+createCompanyDto);
-            this.companyService.save(createCompanyDto);
+            logger.info("Start method register - Request - "+ createDto);
+            this.companyService.save(createDto);
         }catch (Exception e){
             logger.warning("Error method register - Response - "+e);
             throw new Exception();
@@ -29,13 +30,19 @@ public class CompanyController {
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody LoginCompanyDto loginCompanyDto) throws Exception {
+    public ResponseEntity<Object> login(@RequestBody LoginDto loginDto) throws Exception {
         try{
-            logger.warning("Start method login - Request - "+loginCompanyDto);
-            this.companyService.login(loginCompanyDto);
+            logger.info("Start method login - Request - "+ loginDto);
+            return ResponseEntity.ok().body(this.companyService.login(loginDto));
         }catch (Exception e){
-            logger.warning("Error method login - Response - "+e);
-            throw new Exception(e);
+            logger.severe("Error method login - Response - "+e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/teste")
+    @PreAuthorize("hasRole('COMPANY')")
+    public String teste(){
+        return "funcionou";
     }
 }
