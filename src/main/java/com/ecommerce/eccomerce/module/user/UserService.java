@@ -1,18 +1,28 @@
 package com.ecommerce.eccomerce.module.user;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.ecommerce.eccomerce.module.company.dto.AuthResponseDto;
 import com.ecommerce.eccomerce.module.user.dto.CreateUserDto;
 import com.ecommerce.eccomerce.module.user.dto.LoginDto;
 import com.ecommerce.eccomerce.module.user.entity.UsersEntity;
 import com.ecommerce.eccomerce.module.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Service
 public class UserService {
+
+    @Value("${security.token.secret}")
+    private String secretKey;
 
     private static final Logger logger = Logger.getLogger(UserService.class.getName());
     private final UserRepository userRepository;
@@ -36,7 +46,7 @@ public class UserService {
         logger.info("End method save");
     }
 
-    public void login(LoginDto loginDto) throws AuthenticationException {
+    public AuthResponseDto login(LoginDto loginDto) throws AuthenticationException {
         logger.info("Start method - Request - "+loginDto);
 
         var userEntity = this.userRepository.findByEmail(loginDto.email())
@@ -45,7 +55,20 @@ public class UserService {
         var passwordMatches = this.passwordEncoder.matches(loginDto.password(),userEntity.getPassword());
         if(!passwordMatches) throw new AuthenticationException("User not found");
 
-        logger.info("End method login");
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        var expiresIn = Instant.now().plus(Duration.ofHours(2));
+
+        logger.warning(secretKey);
+        var token = JWT.create().withIssuer("companyToken")
+                .withExpiresAt(expiresIn)
+                .withSubject(userEntity.getId().toString())
+                .withClaim("roles", List.of("USER"))
+                .sign(algorithm);
+        var response = AuthResponseDto.builder().acessToken(token).expiresIn(expiresIn.toEpochMilli()).build();
+
+        logger.info("End method login - Response - "+response);
+
+        return response;
     }
 
 
