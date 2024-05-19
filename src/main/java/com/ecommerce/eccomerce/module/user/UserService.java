@@ -2,11 +2,14 @@ package com.ecommerce.eccomerce.module.user;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.ecommerce.eccomerce.module.company.CompanyService;
 import com.ecommerce.eccomerce.module.company.dto.AuthResponseDto;
 import com.ecommerce.eccomerce.module.user.dto.CreateUserDto;
 import com.ecommerce.eccomerce.module.user.dto.LoginDto;
 import com.ecommerce.eccomerce.module.user.entity.UsersEntity;
 import com.ecommerce.eccomerce.module.user.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +19,6 @@ import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class UserService {
@@ -24,7 +26,7 @@ public class UserService {
     @Value("${security.token.secret}")
     private String secretKey;
 
-    private static final Logger logger = Logger.getLogger(UserService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -58,7 +60,6 @@ public class UserService {
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         var expiresIn = Instant.now().plus(Duration.ofHours(2));
 
-        logger.warning(secretKey);
         var token = JWT.create().withIssuer("companyToken")
                 .withExpiresAt(expiresIn)
                 .withSubject(userEntity.getId().toString())
