@@ -7,6 +7,8 @@ import com.ecommerce.eccomerce.module.company.dto.CreateDto;
 import com.ecommerce.eccomerce.module.company.dto.LoginDto;
 import com.ecommerce.eccomerce.module.company.entity.CompanyEntity;
 import com.ecommerce.eccomerce.module.company.repository.CompanyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,7 +18,6 @@ import javax.naming.AuthenticationException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 public class CompanyService {
@@ -24,19 +25,20 @@ public class CompanyService {
     @Value("${security.token.secret}")
     private String secretKey;
 
-    private static final Logger logger = Logger.getLogger(CompanyService.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(CompanyService.class);
     private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public CompanyService(final CompanyRepository companyRepository, final PasswordEncoder passwordEncoder){
+
+    public CompanyService(final CompanyRepository companyRepository, final PasswordEncoder passwordEncoder) {
         this.companyRepository = companyRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void save(CreateDto createUserDto) throws AuthenticationException{
+    public void save(CreateDto createUserDto) throws AuthenticationException {
         logger.info("Start method save- Request - "+createUserDto);
 
-        this.companyRepository.findByEmail(createUserDto.email()).ifPresent((user)->{
+        this.companyRepository.findByEmail(createUserDto.email()).ifPresent((user)-> {
             throw new DuplicateKeyException("Company with email " + createUserDto.email() + " already exists.");
         });
         var passwordEncrypted = passwordEncoder.encode(createUserDto.password());
