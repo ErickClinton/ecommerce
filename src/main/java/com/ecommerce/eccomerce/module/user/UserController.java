@@ -17,14 +17,9 @@ public class UserController {
     public UserController(UserService userService){this.userService = userService;}
     
     @PostMapping("/register")
-    public void register(@RequestBody CreateUserDto createUserDto) throws Exception {
-        try{
+    public void register(@RequestBody CreateUserDto createUserDto) {
             logger.info("Start method register - Request - "+createUserDto);
             this.userService.save(createUserDto);
-        }catch (Exception e){
-            logger.error("Error method register - Response - "+e);
-            throw new Exception();
-        }
     }
 
     @PostMapping("/login")

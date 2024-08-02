@@ -2,6 +2,7 @@ package com.ecommerce.eccomerce.module.user;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.ecommerce.eccomerce.exceptions.UserExistException;
 import com.ecommerce.eccomerce.module.company.CompanyService;
 import com.ecommerce.eccomerce.module.company.dto.AuthResponseDto;
 import com.ecommerce.eccomerce.module.user.dto.CreateUserDto;
@@ -35,11 +36,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void save(CreateUserDto createUserDto) throws AuthenticationException{
+    public void save(CreateUserDto createUserDto){
         logger.info("Start method save- Request - "+createUserDto);
 
        this.userRepository.findByEmail(createUserDto.email()).ifPresent((user)->{
-           throw new DuplicateKeyException("User with email " + createUserDto.email() + " already exists.");
+           throw new UserExistException();
        });
         var passwordEncrypted = passwordEncoder.encode(createUserDto.password());
         var user = this.createUser(createUserDto,passwordEncrypted);

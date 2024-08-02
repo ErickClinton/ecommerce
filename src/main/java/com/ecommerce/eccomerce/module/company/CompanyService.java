@@ -35,7 +35,7 @@ public class CompanyService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void save(CreateDto createUserDto) throws AuthenticationException {
+    public void save(CreateDto createUserDto) {
         logger.info("Start method save- Request - "+createUserDto);
 
         this.companyRepository.findByEmail(createUserDto.email()).ifPresent((user)-> {
